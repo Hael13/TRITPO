@@ -1,0 +1,48 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title th:text="${theme}"></title>
+    <link th:href="@{/styles/cssandjs/main.css}" rel="stylesheet">
+</head>
+<body>
+    <h1 th:text="${theme}"/>
+    <ul th:each="theme : ${themes}">
+        <li><a th:href="'/theme/'+${theme}+'/1'" th:text="${theme}"/></li>
+    </ul>
+    <a href="/addRecord" class="BlueBut Button" style="position: absolute; left: 200px; top: 100px;">Add</a>
+    <form action="#" th:method="get">
+        <label style="position: absolute; left: 650px; top: 40px;">Title: </label>
+        <label style="position: absolute; left: 650px; top: 80px;">Writer: </label>
+        <input type="search" name="title" style="position: absolute; width: 100px; height: 20px; left: 700px; top: 40px;"/>
+        <input type="search" name="writer" style="position: absolute; width: 100px; height: 20px; left: 700px; top: 80px;"/>
+        <input type="submit" value="Search" class="BlueBut Button" style="position: absolute; left: 840px; top: 40px;"/>
+    </form>
+    <div style="position: absolute; left: 200px; top: 140px; alignment: center; width: 700px;">
+        <div th:each="el : ${records}">
+            <div class="Layer">
+                <div style="position: relative; top: 15px">
+                    <strong style="position: relative; font-size: 24px; left: 10px; height: 25px;" th:text="${el.title}" />
+                    <div><a th:href="'/account/'+${el.writer}+'/1'" style="position: relative; font-size: 14px; left: 10px; height: 15px;" th:text="${el.writer}" /></div>
+                </div>
+                <div style="position: relative; top: 10px">
+
+                <form th:each="button:${buttons}" th:action="${button.action}" th:method="post">
+                    <input type="hidden" id="id" name="id" th:value="${el.id}" />
+                    <input type="hidden" id="writer" name="writer" th:value="${el.writer}" />
+                    <input type="hidden" id="title" name="title" th:value="${el.title}" />
+                    <input type="hidden" id="theme" name="theme" th:value="${el.theme}" />
+                    <input type="hidden" id="text" name="text" th:value="${el.text}" />
+                    <input type="submit" class="BlueBut Button" th:value="${button.name}"
+                           th:style="'position: absolute; right: '+${40+buttonStat.index*80}+'px;'"/>
+                </form>
+
+                </div>
+            </div>
+            <div style="height: 20px"></div>
+        </div>
+        <a style="position: absolute; left: 40px;" th:href="${prev}">prev</a>
+        <a style="position: absolute; right: 40px;" th:href="${next}">next</a>
+    </div>
+</body>
+</html>

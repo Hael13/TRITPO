@@ -1,0 +1,41 @@
+.Button
+{
+    font-family: Arial;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 13px;
+    text-align: center;
+    vertical-align: center;
+    -webkit-appearance: none;
+    text-decoration: none;
+    height: 20px;
+    width: 60px;
+}
+
+.BlueBut
+{
+    border: 1px solid #2E6DA4;
+    border-radius: 4px;
+    background-color: #3370B7;
+    background-image: none;
+    color: #FFFFFF;
+}
+
+.RedBut
+{
+    border: 1px solid red;
+    border-radius: 4px;
+    background-color: red;
+    background-image: none;
+    color: #000000;
+}
+
+div.Layer
+{
+    background-color: #FFFFFF;
+    background-image: none;
+    border: 3px solid #000000;
+    border-radius: 30px;
+    width: 700px;
+    height: 80px;
+}
