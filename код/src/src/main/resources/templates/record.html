@@ -1,0 +1,23 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title th:text="${record.title}"/>
+    <link th:href="@{/styles/cssandjs/main.css}" rel="stylesheet" />
+</head>
+<body>
+<div style="position:absolute;left:42px;text-align:left;">
+    <h1 th:text="${record.title}"/>
+    <pre style="color:#000000;font-family:Arial;font-size:15px;width:100px" th:text="${record.text}"/>
+    <form th:object="${comm}" th:method="post" th:action="@{/addComment}">
+        <input type="hidden" id="recordId" name="recordId" th:value="${record.id}" />
+        <textarea th:field="*{text}" maxlength="100" cols="100" rows="1" style="resize: none;"></textarea>
+        <input type="submit" class="BlueBut Button" th:value="Comment" style="position:absolute;left:105ch;" />
+    </form>
+    <div th:each="el : ${comments}">
+        <strong th:text="${el.writer}" style="position:relative;left:42px;color:#000000;font-family:Arial; font-size:20px;"></strong>
+        <pre th:text="${el.text}" style="position:relative;left:100px;color:#000000;font-family:Arial;font-size:13px;"></pre>
+    </div>
+</div>
+</body>
+</html>

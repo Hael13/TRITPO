@@ -1,0 +1,1 @@
+INSERT INTO users VALUE(0, ' ', '$2a$04$6rn4BnSfrHt9CCcpXmZI1eY9dvtfG1H78auo1/fbbG56qA9V/DWgi', 'USER', 'ACTIVE');
