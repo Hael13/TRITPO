@@ -1,8 +1,6 @@
 package com.tritpo.forum.security;
 
-import com.tritpo.forum.enums.Status;
 import com.tritpo.forum.model.User;
-import com.tritpo.forum.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

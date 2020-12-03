@@ -50,12 +50,6 @@ input:focus, textarea:focus, select:focus
 {
     text-align: left;
 }
-#SlideShow1
-{
-    display: flex;
-    height: 187px;
-    border: 0px solid #000000;
-}
 #SlideShow1 .accordion-panel
 {
     transition-property: all;

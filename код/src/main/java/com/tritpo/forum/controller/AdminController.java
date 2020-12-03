@@ -1,8 +1,11 @@
 package com.tritpo.forum.controller;
 
-import com.tritpo.forum.enums.Role;
 import com.tritpo.forum.enums.Status;
+import com.tritpo.forum.model.Comment;
+import com.tritpo.forum.model.Record;
 import com.tritpo.forum.model.User;
+import com.tritpo.forum.service.CommentService;
+import com.tritpo.forum.service.RecordService;
 import com.tritpo.forum.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,7 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
@@ -24,6 +27,9 @@ public class AdminController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    CommentService commentService;
 
     @GetMapping("/ban/{username}")
     public String BanUser(@PathVariable(value="username") String username, HttpServletRequest request){
@@ -41,19 +47,12 @@ public class AdminController {
         return  "redirect:"+request.getHeader("Referer");
     }
 
-    @GetMapping("/addNewTheme/{theme}")
-    public String AddNewTheme(@PathVariable(value = "theme") String theme, HttpServletRequest request){
-
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/forum?verifyServerCertificate=false&useSSL=false&requireSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC");
-        dataSource.setUsername("root");
-        dataSource.setPassword("1234");
-        JdbcTemplate jdbcTemplate=new JdbcTemplate(dataSource);
-        if(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM themes WHERE theme=\'"+theme+"\'", Integer.class)==0)
-            jdbcTemplate.update("INSERT INTO themes(theme) VALUE(?)", theme);
-
-        return "redirect:/account/"+request.getUserPrincipal().getName()+"/1";
+    @GetMapping("/deleteComment")
+    public String deleteComment(@RequestParam(value = "table", required = true) Integer table,
+                                @RequestParam(value = "commentId", required = true) Integer commentId,
+                                HttpServletRequest request) throws Exception {
+        commentService.deleteRow(table, commentId);
+        return "redirect:"+request.getHeader("Referer");
     }
 
 }

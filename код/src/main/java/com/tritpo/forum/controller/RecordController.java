@@ -2,11 +2,16 @@ package com.tritpo.forum.controller;
 
 import com.tritpo.forum.HTMLElement.Button;
 import com.tritpo.forum.enums.Role;
+import com.tritpo.forum.exceptions.NoSuchRecordException;
+import com.tritpo.forum.exceptions.NoSuchThemeException;
+import com.tritpo.forum.model.Comment;
 import com.tritpo.forum.model.Record;
+import com.tritpo.forum.service.CommentService;
 import com.tritpo.forum.service.RecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +27,22 @@ public class RecordController {
     @Autowired
     RecordService recordService;
 
+    @Autowired
+    CommentService commentService;
+
+    boolean isADMIN(){
+        Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>)
+                SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+        return authorities.contains(Role.ADMIN);
+    }
+
+    @PostMapping("/addComment")
+    public String addComment(Comment comment, HttpServletRequest request){
+        comment.setWriter(request.getUserPrincipal().getName());
+        commentService.add(comment);
+        return "redirect:"+request.getHeader("Referer");
+    }
+
     @GetMapping("/addRecord")
     public String getAddRecordPage(Model model){
         Record record=new Record();
@@ -32,72 +53,74 @@ public class RecordController {
     }
 
     @PostMapping("/addRecord")
-    public String addRecord(Model model, Record record, HttpServletRequest request){
+    public String addRecord(Model model, Record record, HttpServletRequest request) throws NoSuchThemeException {
+
+        if(!recordService.getThemes().contains(record.getTheme())){
+            if(isADMIN())
+                recordService.addTheme(record.getTheme());
+            else
+                throw new NoSuchThemeException(record.getTheme());
+        }
+
         String reqUser=request.getUserPrincipal().getName();
         record.setWriter(reqUser);
         recordService.add(record);
-        Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>)
-                SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-        if(authorities.contains(Role.ADMIN))
-            return "redirect:/addNewTheme/"+record.getTheme();
         return "redirect:/account/"+reqUser+"/1";
     }
 
     @PostMapping("/updateRecord")
-    public String updateRecord(Model model, Record record, HttpServletRequest request){
+    public String updateRecord(Model model, Record record, HttpServletRequest request) throws NoSuchRecordException{
         String reqUser=request.getUserPrincipal().getName();
         recordService.update(record);
         return "redirect:/account/"+reqUser+"/1";
     }
 
-    @PostMapping("/read")
-    public String getReadRecordPage(Model model, Record record) throws Exception {
-        model.addAttribute("record", record);
+    @GetMapping("/read")
+    public String getReadRecordPage(Model model, @RequestParam(value = "id", required = true) Integer id) throws NoSuchRecordException {
+        Comment comment=new Comment(id, 0, "", "");
+        boolean x=isADMIN();
+        synchronized (this) {
+            Record record = recordService.get(id);
+            commentService.update(comment);
+            model.addAttribute("x", x);
+            model.addAttribute("record", record);
+            model.addAttribute("comm", comment);
+            model.addAttribute("comments", commentService.search(record.getId()));
+        }
         return "record";
     }
 
-    @PostMapping("/edit")
-    public String getEditRecordPage(Model model, Record record) throws Exception {
-        model.addAttribute("url", "/updateRecord");
-        model.addAttribute("record", record);
-        model.addAttribute("themes", recordService.getThemes());
+    @GetMapping("/edit")
+    public String getEditRecordPage(Model model, @RequestParam(value = "id", required = true) Integer id) throws NoSuchRecordException {
+        synchronized (this){
+            model.addAttribute("url", "/updateRecord");
+            model.addAttribute("record", recordService.get(id));
+            model.addAttribute("themes", recordService.getThemes());
+        }
         return "add_record";
     }
 
-    @PostMapping("/delete")
-    public String deleteRecord(Model model, Record record, HttpServletRequest request) throws Exception {
-        recordService.deleteRow(record.getId());
+    @GetMapping("/delete")
+    public String deleteRecord(Model model, @RequestParam(value = "id", required = true) Integer id, HttpServletRequest request) throws Exception {
+        synchronized (this){
+            commentService.deleteRow(id);
+            recordService.deleteRow(id);
+        }
         return "redirect:"+request.getHeader("Referer");
     }
 
     @GetMapping("/theme/{theme}/{page}")
     public String getThemePage(Model model, @PathVariable(value = "theme") String theme, @PathVariable(value = "page") Integer page,
-                               @RequestParam(value = "title", defaultValue = "") String title,
-                               @RequestParam(value = "writer", defaultValue = "") String writer) throws Exception {
+                               @RequestParam(value = "title", required = false) String title,
+                               @RequestParam(value = "writer", required = false) String writer) throws Exception {
 
-        Collection<GrantedAuthority> authorities = (Collection<GrantedAuthority>)
-                SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-
-        ArrayList<String> paramName=new ArrayList<>();
-        ArrayList<String> param=new ArrayList<>();
-        paramName.add("theme");
-        param.add(theme);
-        if(!title.equals("")){
-            paramName.add("title");
-            param.add(title);
-        }
-        if(!writer.equals("")){
-            paramName.add("writer");
-            param.add(writer);
-        }
-
-        List<Record> records=recordService.search(paramName, param);
+        List<Record> records=recordService.search(theme, title, writer);
         records=records.subList((page-1)*5, Math.min (page*5, records.size()));
 
         ArrayList<Button> buttons=new ArrayList<>();
         buttons.add(new Button("Read", "/read"));
 
-        if(authorities.contains(Role.ADMIN))
+        if(isADMIN())
             buttons.add(new Button("Delete", "/delete"));
 
         model.addAttribute("records", records);

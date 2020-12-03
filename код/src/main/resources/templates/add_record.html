@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Add record</title>
-    <link th:href="@{/styles/cssandjs/add_record.css}" rel="stylesheet">
+    <link th:href="@{/styles/cssandjs/add_record.css}" rel="stylesheet" />
 </head>
 <body>
 <div id="Layer1" style="position:absolute;text-align:center;left:0%;top:0%;width:100%;height:100%;z-index:18;">
@@ -16,16 +16,16 @@
 
                 <label id="Label1" style="position:absolute;left:6px;top:5px;width:105px;height:45px;line-height:45px;z-index:0;">Theme:</label>
 
-                <input list="t" th:field="*{theme}" style="position:absolute;left:119px;top:18px;width:335px;height:16px;" spellcheck="false">
+                <input list="t" th:field="*{theme}" style="position:absolute;left:119px;top:18px;width:335px;height:16px;" spellcheck="false" />
                 <datalist id="t">
-                    <option th:each="el: ${themes}" th:value="${el}">
+                    <option th:each="el: ${themes}" th:value="${el}" />
                 </datalist>
 
                 <label id="Label2" style="position:absolute;left:6px;top:58px;width:66px;height:45px;line-height:45px;z-index:2;">Title:</label>
                 <input type="text" th:field="*{title}" style="position:absolute;left:119px;top:71px;width:335px;height:16px;z-index:3;" spellcheck="false"/>
 
                 <label id="Label3" style="position:absolute;left:6px;top:111px;width:66px;height:45px;line-height:45px;z-index:4;">Text:</label>
-                <textarea th:field="*{text}" style="position:absolute;left:12px;top:164px;width:931px;height:129px;z-index:5;" rows="7" cols="101" spellcheck="false"></textarea>
+                <textarea th:field="*{text}" maxlength="500" style="position:absolute;left:12px;top:164px;width:931px;height:129px;z-index:5;" rows="7" cols="100" spellcheck="false"></textarea>
                 <input type="submit" class="BlueBut Button" value="Upload" style="position:absolute;left:12px;top:320px;"/>
             </form>
         </div>
