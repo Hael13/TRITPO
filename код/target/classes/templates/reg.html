@@ -1,0 +1,23 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Registration</title>
+</head>
+<body>
+<div class="container">
+    <form class="form-signup" method="post" action="/reg">
+        <h2 class="form-signin-heading">Registration</h2>
+        <p>
+            <label>Username</label>
+            <input type="text" name="Name" minlength="4" class="form-control" placeholder="name" required />
+        </p>
+        <p>
+            <label>Password</label>
+            <input type="password" name="assword" class="form-control" placeholder="Password" required />
+        </p>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
+    </form>
+</div>
+</body>
+</html>
